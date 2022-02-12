@@ -1,0 +1,340 @@
+#+TITLE: CSE464 - Digital Image Processing - HW1
+
+#+OPTIONS: num:nil
+#+SETUPFILE: /home/near/opt/template-nodate.org
+#+LATEX_HEADER: \usepackage[margin=1in]{geometry}
+#+LaTeX_CLASS_OPTIONS: [a4paper]
+#+LATEX_HEADER: \usepackage{minted}
+#+LATEX_HEADER: \usepackage{multicol}
+#+LATEX_HEADER: \definecolor{bg}{rgb}{0.95,0.95,0.95}
+#+LATEX_HEADER: \newminted{c}{fontsize=\footnotesize,frame=single,framesep=2mm}
+#+LATEX_HEADER: \usepackage[demo]{graphicx}
+#+LATEX_HEADER: \usepackage{subcaption}
+#+LATEX_HEADER: \usepackage{caption}
+#+LATEX_HEADER: \DeclareCaptionFormat{empty}{}
+#+LATEX_HEADER: \captionsetup[subfigure]{labelformat=empty}
+
+#+LATEX_HEADER: \newminted{text}{breaklines,fontsize=\footnotesize,frame=single,framesep=2mm}
+
+# #+ATTR_LATEX: :font \ttfamily{}
+
+* Exercise 1
+
+
+To obtain $A$, $B$ can be multiplied with transformation matrix $C$.
+\begin{flalign*}
+ & C \cdot B = A
+\textrm{ where } C \textrm{ is }
+  \begin{bmatrix}
+    c_{11} & c_{12} & c_{13}\\
+    c_{21} & c_{22} & c_{23}\\
+    0 & 0 & 1
+   \end{bmatrix} &
+\end{flalign*}
+Coordinates that are need to be registered by transformation matrix are;
+
+# TODO: center
+|     | B(x,y) | A(x,y) |
+|-----+--------+--------|
+| /   | <      | <      |
+| 1   | 1,2    | 2,2    |
+| 2   | 2,1    | -1,4   |
+| 3   | 3,1    | -4,-4  |
+
+Multiplication of each point in image B, gives the point in image A.
+\begin{flalign*}
+ C \cdot B_1 &= A_1 & \\
+ C \cdot B_2 &= A_2 & \\
+ C \cdot B_3 &= A_3 &
+\end{flalign*}
+
+For $B_1$;
+\begin{flalign*}
+& \begin{bmatrix}
+    c_{11} & c_{12} & c_{13}\\
+    c_{21} & c_{22} & c_{23}\\
+    0 & 0 & 1
+   \end{bmatrix}
+\cdot
+ \begin{bmatrix}
+    1 \\
+    2 \\
+    1
+   \end{bmatrix}
+=
+ \begin{bmatrix}
+    2 \\
+    2 \\
+    1
+   \end{bmatrix}
+  &
+\end{flalign*}
+\begin{flalign*}
+    c_{11} + 2c_{12} + c_{13} &= 2 &\\
+    c_{21} + 2c_{22} + c_{23} &= 2 &
+\end{flalign*}
+
+For $B_2$;
+\begin{flalign*}
+& \begin{bmatrix}
+    c_{11} & c_{12} & c_{13}\\
+    c_{21} & c_{22} & c_{23}\\
+    0 & 0 & 1
+   \end{bmatrix}
+\cdot
+ \begin{bmatrix}
+    2 \\
+    1 \\
+    1
+   \end{bmatrix}
+=
+ \begin{bmatrix}
+    -1 \\
+    4 \\
+    1
+   \end{bmatrix}
+  &
+\end{flalign*}
+\begin{flalign*}
+    2c_{11} + 2c_{12} + c_{13} &= -1 &\\
+    2c_{21} + c_{22} + c_{23} &= 4 &
+\end{flalign*}
+
+
+For $B_3$;
+\begin{flalign*}
+& \begin{bmatrix}
+    c_{11} & c_{12} & c_{13}\\
+    c_{21} & c_{22} & c_{23}\\
+    0 & 0 & 1
+   \end{bmatrix}
+\cdot
+ \begin{bmatrix}
+    3 \\
+    1 \\
+    1
+   \end{bmatrix}
+=
+ \begin{bmatrix}
+    -4 \\
+    4 \\
+    1
+   \end{bmatrix}
+  &
+\end{flalign*}
+\begin{flalign*}
+    3c_{11} + 2c_{12} + c_{13} &= -4 &\\
+    3c_{21} + c_{22} + c_{23} &= 4 &
+\end{flalign*}
+
+Using first equations ($c_{1i}$) obtained by the matrix multiplication;
+\begin{flalign*}
+    c_{11} + 2c_{12} + c_{13} &= 2 &\\
+    2c_{11} + c_{12} + c_{13} &= -1 &\\
+    3c_{11} + c_{12} + c_{13} &= -4 &
+\end{flalign*}
+\begin{flalign*}
+    c_{11} &= -3 &\\
+    c_{12} &= 0 &\\
+    c_{13} &= 5 &
+\end{flalign*}
+
+Using second equations ($c_{2i}$) obtained by the matrix multiplication;
+\begin{flalign*}
+    c_{21} + 2c_{22} + c_{23} &= 2 & \\
+    2c_{21} + c_{22} + c_{23} &= 4 & \\
+    3c_{21} + c_{22} + c_{23} &= 4 &
+\end{flalign*}
+\begin{flalign*}
+    c_{21} &= 0 &\\
+    c_{22} &= -2 &\\
+    c_{23} &= 6 &
+\end{flalign*}
+
+The transformation matrix $C$ is;
+\begin{flalign*}
+C
+&= \begin{bmatrix}
+    -3 & 0 & 5\\
+    0 & -2 & c_{23}\\
+    0 & 0 & 1
+   \end{bmatrix}
+  &
+\end{flalign*}
+
+
+
+\newpage
+* Excercise 2
+
+Morphological opening is used to remove artifacts while preserving the main object.
+
+It is experimented with $Z_4$ and $Z_8$ structuring elements. While $Z_4$ left a single artifact, $Z_8$ successfully removed all the artifacts. However, on the edge areas of the image such as hands and legs, $Z_4$ was better compared to $Z_8$ in terms of preserving the main object.
+
+\begin{figure}[htp]
+\centering
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=.9\linewidth]{Image1.png}
+  \caption{Original image}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=.9\linewidth]{ex2-erosion-z4.png}
+  \caption{Eroded image using $Z_4$}
+  \label{fig:sub2}
+\end{subfigure}
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=.9\linewidth]{ex2-dilation-z4.png}
+  \caption{Dilated image using $Z_4$}
+  \label{fig:sub2}
+\end{subfigure}
+\caption{Morphological opening with $Z_4$ structuring elemnet}
+\label{fig:test}
+\end{figure}
+
+
+\begin{figure}[htp]
+\centering
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=.9\linewidth]{Image1.png}
+  \caption{Original image}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=.9\linewidth]{ex2-erosion-z8.png}
+  \caption{Eroded image using $Z_8$}
+  \label{fig:sub2}
+\end{subfigure}
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=.9\linewidth]{ex2-dilation-z8.png}
+  \caption{Dilated image using $Z_8$}
+  \label{fig:sub2}
+\end{subfigure}
+\caption{Morphological opening with $Z_8$ structuring elemnet}
+\label{fig:test}
+\end{figure}
+
+
+
+\newpage
+* Excercise 3
+
+$8\times8$ cross structuring element is used to erode the image. To make the curve intersections stand out, the image is dilated with $17\times17$ ellipse structuring element. Negation of the original image is summed with the intersection points, to separate curve segments. Lastly, connected component labeling can be applied in order to count number of curve segments. However, there are some errors near the edges of the image.
+
+
+\begin{figure}[htp]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.9\linewidth]{Image2}
+  \caption{Original image}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.9\linewidth]{ex3.2}
+  \caption{After applying erosion followed by dilation}
+  \label{fig:sub2}
+\end{subfigure}
+\captionsetup{format=empty}
+\label{fig:test}
+\end{figure}
+
+\begin{figure}[htp]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.9\linewidth]{ex3.3}
+  \caption{Seperated curve segments}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.9\linewidth]{ex3.4}
+  \caption{Curve segments colored using CC labeling}
+  \label{fig:sub2}
+\end{subfigure}
+\captionsetup{format=empty}
+\label{fig:test}
+\end{figure}
+
+
+
+\newpage
+* Exercise 4
+
+One of the teeth of the hair comb is used as a structuring element. The image is inverted (negated) and morphological opening is applied. This allows detecting the faultless teeth of the comb. Then the opened version of the images is arithmetically summed with the original version of the image in order to detect the faulty teeth. To make the missing teeth more distinguishable, the image is dilated by $4 \times 4$ structuring element. The last image demonstrates the missing teeth over the original one.
+
+\begin{figure}[htp]
+\centering
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=.9\linewidth]{Image3b}
+  \caption{Original image}
+\end{subfigure}%
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=.9\linewidth]{ex4.1-negated}
+  \caption{Negated image}
+\end{subfigure}
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=.5\linewidth]{kernelex}
+  \caption{Custom structuring element ($73\times43$ px)}
+\end{subfigure}
+\captionsetup{format=empty}
+\end{figure}
+\begin{figure}[htp]
+
+\centering
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=.9\linewidth]{ex4.2-erosion}
+  \caption{Eraded version of the negated image with custom SE}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=.9\linewidth]{ex4.3-opening}
+  \caption{Dilation is applied (opened)}
+  \label{fig:sub2}
+\end{subfigure}
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=.9\linewidth]{ex4.4-dilated}
+  \caption{Dilation with SE = $13\times 13$}
+  \label{fig:sub2}
+\end{subfigure}
+\captionsetup{format=empty}
+\label{fig:test}
+\end{figure}
+
+\begin{figure}[htp]
+\centering
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=.9\linewidth]{ex4.5-img-dilated}
+  \caption{Summation with original image}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=.9\linewidth]{ex4.6-eroted}
+  \caption{Dilated with SE = $4 \times 4$}
+  \label{fig:sub2}
+\end{subfigure}
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=.9\linewidth]{ex4.7-weighted}
+  \caption{Demonstration of final result}
+  \label{fig:sub2}
+\end{subfigure}
+\captionsetup{format=empty}
+\label{fig:test}
+\end{figure}
