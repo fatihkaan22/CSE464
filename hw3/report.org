@@ -1,0 +1,122 @@
+#+TITLE: CSE464 - Digital Image Processing - HW3
+
+#+OPTIONS: num:nil
+#+SETUPFILE: /home/near/opt/template-nodate.org
+#+LATEX_HEADER: \usepackage[margin=1in]{geometry}
+#+LaTeX_CLASS_OPTIONS: [a4paper,12pt]
+#+LATEX_HEADER: \usepackage{minted}
+#+LATEX_HEADER: \usepackage{multicol}
+#+LATEX_HEADER: \definecolor{bg}{rgb}{0.95,0.95,0.95}
+#+LATEX_HEADER: \newminted{c}{fontsize=\footnotesize,frame=single,framesep=2mm}
+#+LATEX_HEADER: \usepackage[demo]{graphicx}
+#+LATEX_HEADER: \usepackage{subcaption}
+#+LATEX_HEADER: \usepackage{caption}
+#+LATEX_HEADER: \DeclareCaptionFormat{empty}{}
+#+LATEX_HEADER: \captionsetup[subfigure]{labelformat=empty}
+
+#+LATEX_HEADER: \newminted{text}{breaklines,fontsize=\footnotesize,frame=single,framesep=2mm}
+
+# #+ATTR_LATEX: :font \ttfamily{}
+
+* Exercise 1
+
+Ordering relation shall be related to the data the image represents.
+In grayscale images, a pixel value (an integer) represents the light of intensity, and the pixels can be ordered by comparing the integers.
+If a pixel value is a real vector, the pixel value may represent the intensity of light at a range of wavelengths.
+
+Assume that the ordering relation is used to identify a material.
+If the remission rate of a material is known in a certain wavelength, the ordering relation can be sensitive to that wavelength.
+Since what the image represents and the purpose of the ordering is unknown, more general ordering relations are used.
+
+** a)
+
+Ordering relation used is "the norm of the vector less than or equal to".
+
+  2D images where each pixel is a vector,
+\begin{flalign*}
+& f: \mathbb{Z}^{2} \to v_1, \dots, v_n \in \Bbb R^n, \dim(v_i) > 2 &
+\end{flalign*}
+  and the ordering relation is defined as,
+\begin{flalign*}
+& \forall i,j \in v_1, \dots, v_n \in \Bbb R^n,  i \le j \iff \|\vc{i}\| \le \|\vc{j}\| & \\
+& \forall i,j \in v_1, \dots, v_n \in \Bbb R^n, \|\vc{j}\| \le \|\vc{i}\| $ or $ \|\vc{i}\| \le \|\vc{j}\| $ (total ordering)$ &
+\end{flalign*}
+
+
+** b)
+
+Ordering relation used is "the determinant of the matris less than or equal to".
+
+2D images where each pixel is a square matrix,
+\begin{flalign*}
+& f: \mathbb{Z}^{2} \to \mathbb{R}^{n \times n} &
+\end{flalign*}
+and the ordering relation is defined as,
+\begin{flalign*}
+& \forall A,B \in \mathbb{R}^{n \times n}, A \le B \iff \det(A) \le \det(B) & \\
+& \forall A,B \in \mathbb{R}^{n \times n},
+\det(A) \le \det(B)
+$ or $
+\det(B) \le \det(A) $ (total ordering)$ &
+\end{flalign*}
+
+** c)
+
+Ordering relation used is "the squared sum of elements in the tensor less than or equal to".
+
+2D images where each pixel is a 3rd order tensor,
+\begin{flalign*}
+& f: \mathbb{Z}^{2} \to A \in \mathbb{R}^{I \times J \times K} &
+\end{flalign*}
+and the ordering relation is defined as,
+\begin{flalign*}
+& \forall A,B \in \mathbb{R}^{I \times J \times K}, A \le B
+\iff
+\sum_{i=1}^{I}
+\sum_{j=1}^{J}
+\sum_{k=1}^{K}
+a_{ijk}^2
+\le
+\sum_{i=1}^{I}
+\sum_{j=1}^{J}
+\sum_{k=1}^{K}
+b_{ijk}^2
+& \\
+& \forall A,B \in \mathbb{R}^{I \times J \times K}, A \le B,
+\sum_{i=1}^{I}
+\sum_{j=1}^{J}
+\sum_{k=1}^{K}
+a_{ijk}^2
+\le
+\sum_{i=1}^{I}
+\sum_{j=1}^{J}
+\sum_{k=1}^{K}
+b_{ijk}^2
+\textrm{ or }
+\sum_{i=1}^{I}
+\sum_{j=1}^{J}
+\sum_{k=1}^{K}
+b_{ijk}^2
+\le
+\sum_{i=1}^{I}
+\sum_{j=1}^{J}
+\sum_{k=1}^{K}
+a_{ijk}^2 &
+\end{flalign*}
+
+
+
+* Excercise 2
+
+In mathematical morphology, noise reduction can be achieved by performing opening and closing sequences on the image.
+Opening decreases sizes of small bright details (noises), with no effect on the darker areas.
+
+If total ordering is used, then all pixel values or vectors must be comparable.
+That means maximum and minimum values can always be found in a given set of values.
+Therefore scalar ordering should be used e.g. magnitude of a vector.
+That is the direction of the vector is ignored.
+This results in more strict noise reduction and possibly removes the details of the image along with the noise.
+
+If partial ordering is used, such as product order which is given two paris ($a_1, b_1$) and ($a_2, b_2$) in $A \times B$, $(a_1, b_1) \le (a_2, b_2)$ if and only if $a_1 \le a_2$ and $b_1 \le b_2$, only limited number of values are comparable. This leads to less strict noise reduction.
+
+Depending on the image partial order might be a better choice since it uses more information.
